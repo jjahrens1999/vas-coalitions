@@ -12,7 +12,7 @@ public class WorkedJob implements Job {
 
     public WorkedJob(double _originalPrice, double _delegatePrice) {
         // Add the share of the surplus profit owed to the delegating data center to the "price" in order to deduct it from the revenue
-        price = (_originalPrice - _delegatePrice) * Constants.ALPHA + _delegatePrice;
+        price = _delegatePrice + (Constants.JOB_REWARD - _originalPrice) + (_originalPrice - _delegatePrice) * Constants.ALPHA;
     }
 
     @Override

@@ -14,6 +14,6 @@ public class DelegatedJob implements Job{
 
     @Override
     public double calculateRevenue() {
-        return (originalPrice - delegatePrice) * Constants.ALPHA;
+        return (Constants.JOB_REWARD - originalPrice) + (originalPrice - delegatePrice) * Constants.ALPHA;
     }
 }
