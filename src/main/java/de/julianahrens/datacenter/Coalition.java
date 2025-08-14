@@ -27,13 +27,7 @@ public class Coalition extends ComputeClusterElement implements DataCenterCollec
         ownDataCenterCosts = getDataCentersByCost();
         ownDataCenterCosts.sort(null);
 
-        ownDataCenterCosts.forEach(delegationCandidateInCollection -> {
-            for (int i = 0; i < delegationCandidates.size(); i++) {
-                if (delegationCandidates.get(i).getDataCenter().equals(delegationCandidateInCollection.getDataCenter())) {
-                    delegationCandidates.set(i, delegationCandidateInCollection);
-                }
-            }
-        });
+        ownDataCenterCosts.forEach(this::updateDelegationCandidate);
         delegationCandidates.sort(null);
     }
 
@@ -55,7 +49,9 @@ public class Coalition extends ComputeClusterElement implements DataCenterCollec
             for (DataCenterCostTuple delegationRequest : incomingDelegationRequests) {
                 if (ownDataCenterCosts.get(ownDataCenterIndex).getDataCenter().doConfirmOrRejectSingleDelegationRequest(delegationRequest)) {
                     // next job should be offered to datacenter with next higher cost
-                    ownDataCenterIndex++;
+                    if(++ownDataCenterIndex >= ownDataCenterCosts.size()) {
+                        break;
+                    };
                 } else {
                     // if this job was not excepted by this data center the next job which will have a lower value will not be accepted by the next datacenter which will have higher cost either so every following job can be safely rejected by the coalition
                     break;

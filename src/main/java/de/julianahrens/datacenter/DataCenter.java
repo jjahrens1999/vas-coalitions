@@ -33,6 +33,7 @@ public class DataCenter extends ComputeClusterElement {
     public void doDelegate() {
         if(coalition.isEmpty()) {
             collectDelegationCandidates();
+            updateDelegationCandidate(new DataCenterCostTuple(this, actualCost));
             delegationCandidates.sort(null);
             BasicStrategy.instance.doDelegate(this, delegationCandidates);
         } else {
