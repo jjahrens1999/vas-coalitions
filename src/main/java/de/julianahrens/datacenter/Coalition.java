@@ -1,5 +1,6 @@
 package de.julianahrens.datacenter;
 
+import de.julianahrens.simulation.Constants;
 import de.julianahrens.strategy.BasicStrategy;
 
 import java.util.ArrayList;
@@ -41,19 +42,31 @@ public class Coalition extends ComputeClusterElement implements DataCenterCollec
         ownDelegationRequests.forEach(ownDelegationRequest -> BasicStrategy.instance.doDelegate(ownDelegationRequest, delegationCandidates));
     }
 
+    // the following function implements the augmented delegation acceptance algorithm for coalitions described in the paper
+    // as the coalition wants to maximise the collective profit of its members, delegation requests from inside the coalition are preferred
     @Override
     public void doConfirmOrRejectDelegationRequests() {
-        if (!incomingDelegationRequests.isEmpty()) {
-            sortDescending(incomingDelegationRequests);
-            int ownDataCenterIndex = 0;
-            for (DataCenterCostTuple delegationRequest : incomingDelegationRequests) {
-                if (ownDataCenterCosts.get(ownDataCenterIndex).getDataCenter().doConfirmOrRejectSingleDelegationRequest(delegationRequest)) {
-                    // next job should be offered to datacenter with next higher cost
-                    if(++ownDataCenterIndex >= ownDataCenterCosts.size()) {
-                        break;
-                    };
+        for (DataCenterCostTuple ownDataCenterCost : ownDataCenterCosts) {
+            if (!incomingDelegationRequests.isEmpty()) {
+                List<DataCenterCostTuple> incomingDelegationRequestsCoalitionUsefulness = incomingDelegationRequests.stream().map(delegationRequest -> {
+                    boolean requesterInCoalition = dataCenters.contains(delegationRequest.getDataCenter());
+                    if (requesterInCoalition) {
+                        // usefulness to coalition is full additional profit
+                        return new DataCenterCostTuple(delegationRequest.getDataCenter(), delegationRequest.getCost() - ownDataCenterCost.getCost());
+                    } else {
+                        // usefulness to coalition is alpha * additional profit
+                        return new DataCenterCostTuple(delegationRequest.getDataCenter(), (delegationRequest.getCost() - ownDataCenterCost.getCost()) * Constants.ALPHA);
+                    }
+                }).collect(Collectors.toCollection(ArrayList::new));
+                sortDescending(incomingDelegationRequestsCoalitionUsefulness);
+                DataCenterCostTuple mostUsefulRequest = incomingDelegationRequestsCoalitionUsefulness.getFirst();
+                if (ownDataCenterCost.getDataCenter().doConfirmOrRejectSingleDelegationRequest(mostUsefulRequest.getDataCenter())) {
+                    DataCenterCostTuple originalDelegationRequest = incomingDelegationRequests.stream()
+                            .filter(delegationRequest -> delegationRequest.getDataCenter().equals(mostUsefulRequest.getDataCenter()))
+                            .toList().getFirst();
+                    incomingDelegationRequests.remove(originalDelegationRequest);
                 } else {
-                    // if this job was not excepted by this data center the next job which will have a lower value will not be accepted by the next datacenter which will have higher cost either so every following job can be safely rejected by the coalition
+                    // if this job was not accepted by this data center the next data center which will have a higher cost will not accept the next job which will have a lower value either so every following job can be safely rejected by the coalition
                     break;
                 }
             }

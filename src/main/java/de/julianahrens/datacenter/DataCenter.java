@@ -42,17 +42,17 @@ public class DataCenter extends ComputeClusterElement {
         }
     }
 
+    // the following two functions implement the delegation accepting algorithm discussed in class
     @Override
     public void doConfirmOrRejectDelegationRequests() {
         if(!delegationRequests.isEmpty()) {
             sortDescending(delegationRequests);
-            doConfirmOrRejectSingleDelegationRequest(delegationRequests.getFirst());
+            doConfirmOrRejectSingleDelegationRequest(delegationRequests.getFirst().getDataCenter());
         }
     }
 
-    public boolean doConfirmOrRejectSingleDelegationRequest(DataCenterCostTuple delegationRequest) {
-        DataCenter other = delegationRequest.getDataCenter();
-        double otherCost = delegationRequest.getCost();
+    public boolean doConfirmOrRejectSingleDelegationRequest(DataCenter other) {
+        double otherCost = other.getActualCost();
         if(otherCost > actualCost) {
             jobs.put(other, new WorkedJob(otherCost, actualCost));
             other.receiveDelegationConfirmation(this);
