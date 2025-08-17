@@ -1,7 +1,7 @@
 package de.julianahrens.simulation;
 
+import de.julianahrens.resultlogging.DuckDbResultLogger;
 import de.julianahrens.resultlogging.ResultLogger;
-import de.julianahrens.resultlogging.SoutResultLogger;
 
 import java.util.List;
 
@@ -25,6 +25,9 @@ public class Constants {
     // Seed for Random object used in Simulation
     public static final long RANDOM_SEED = 42;
 
+    // DuckDB file name
+    public static final String DUCKDB_NAME = "test-db.db";
+
     // Result logger
-    public static final ResultLogger LOGGER = new SoutResultLogger();
+    public static final ResultLogger LOGGER = new DuckDbResultLogger();
 }

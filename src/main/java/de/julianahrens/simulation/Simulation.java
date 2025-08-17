@@ -7,7 +7,6 @@ import de.julianahrens.datacenter.FederatedComputeCluster;
 import de.julianahrens.resultlogging.SimulationResult;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Simulation {
@@ -71,7 +70,7 @@ public class Simulation {
         return Stream.empty();
     }
 
-    private SimulationResult runSingleSimulation(List<DataCenter> dataCenters, List<Coalition> coalitions, List<Set<Integer>> coalitionConfiguration) {
+    private SimulationResult runSingleSimulation(List<DataCenter> dataCenters, List<Coalition> coalitions, List<Set<Integer>> coalitionConfiguration, double deviationMultiplier) {
         List<ComputeClusterElement> clusterElements = Stream.concat(dataCenters.stream(), coalitions.stream()).toList();
         clusterElements.forEach(ComputeClusterElement::doDelegate);
         clusterElements.forEach(ComputeClusterElement::doConfirmOrRejectDelegationRequests);
@@ -81,11 +80,11 @@ public class Simulation {
 
         String delegations = DelegationLog.instance.toString();
 
-        return new SimulationResult(actualCosts, profits, coalitionConfiguration, delegations);
+        return new SimulationResult(deviationMultiplier, actualCosts, profits, coalitionConfiguration, delegations);
     }
 
     public void simulate() {
-        for (double deviation_multiplier = 0; deviation_multiplier <= 1; deviation_multiplier += 0.1) {
+        for (double deviationMultiplier = 0; deviationMultiplier <= 1; deviationMultiplier += 0.1) {
             for (List<Set<Integer>> coalitionConfiguration : coalitionConfigurations) {
                 Random rand = new Random(Constants.RANDOM_SEED);
                 for (int round = 0; round < Constants.N_SIMULATION_ROUNDS; round++) {
@@ -93,13 +92,13 @@ public class Simulation {
                     FederatedComputeCluster cluster = new FederatedComputeCluster(dataCenters);
                     for (int i = 0; i < Constants.DATA_CENTER_COSTS.size(); i++) {
                         double mean = Constants.DATA_CENTER_COSTS.get(i);
-                        double actualValue = (rand.nextGaussian() * (Constants.STANDARD_DEVIATION * deviation_multiplier)) + mean;
+                        double actualValue = (rand.nextGaussian() * (Constants.STANDARD_DEVIATION * deviationMultiplier)) + mean;
                         dataCenters.add(new DataCenter(i, cluster, mean, actualValue));
                     }
 
                     List<Coalition> coalitions = coalitionConfiguration.stream().flatMap(configuration -> mapCoalitionFromConfiguration(configuration, dataCenters, cluster)).toList();
 
-                    SimulationResult result = runSingleSimulation(dataCenters, coalitions, coalitionConfiguration);
+                    SimulationResult result = runSingleSimulation(dataCenters, coalitions, coalitionConfiguration, deviationMultiplier);
 
                     Constants.LOGGER.log(result);
 
