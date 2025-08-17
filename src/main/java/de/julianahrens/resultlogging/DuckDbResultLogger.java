@@ -70,6 +70,10 @@ public class DuckDbResultLogger implements ResultLogger {
 
     @Override
     public void log(SimulationResult result) {
+        if (counter % 100 == 0) {
+            System.out.println("on simulation" + counter);
+        }
+
         try (PreparedStatement statement = connection.prepareStatement(buildDmlStatement(result))) {
             statement.setInt(1, counter++);
             statement.setDouble(2, result.getDeviationMultiplier());

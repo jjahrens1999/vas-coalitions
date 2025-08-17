@@ -14,19 +14,19 @@ public class Constants {
     public static final double ALPHA = 0.5;
 
     // Means of the datacenters to be simulated
-    public static final List<Integer> DATA_CENTER_COSTS = List.of(15, 16, 17, 18);
+    public static final List<Integer> DATA_CENTER_COSTS = List.of(15, 16, 17, 18, 19, 20);
 
     // Standard deviation of the data center costs
     public static final int STANDARD_DEVIATION = 2;
 
     // Number of rounds to run the simulation for
-    public static final int N_SIMULATION_ROUNDS = 1;
+    public static final int N_SIMULATION_ROUNDS = 100;
 
     // Seed for Random object used in Simulation
     public static final long RANDOM_SEED = 42;
 
     // DuckDB file name
-    public static final String DUCKDB_NAME = "test-db.db";
+    public static final String DUCKDB_NAME = "first-run-17-08.db";
 
     // Result logger
     public static final ResultLogger LOGGER = new DuckDbResultLogger();
