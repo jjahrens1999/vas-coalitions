@@ -13,7 +13,7 @@ public class FederatedComputeCluster implements DataCenterCollection {
     }
 
     @Override
-    public List<DataCenterCostTuple> getDataCentersByCost() {
+    public ArrayList<DataCenterCostTuple> getDataCentersByCost() {
         return dataCenters.stream().map(
                 dataCenter -> new DataCenterCostTuple(dataCenter, dataCenter.getMeanCost())
         ).collect(Collectors.toCollection(ArrayList::new));

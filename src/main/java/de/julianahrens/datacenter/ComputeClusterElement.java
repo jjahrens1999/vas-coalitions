@@ -1,11 +1,12 @@
 package de.julianahrens.datacenter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class ComputeClusterElement {
 
-    protected List<DataCenterCostTuple> delegationCandidates;
+    protected ArrayList<DataCenterCostTuple> delegationCandidates;
     protected FederatedComputeCluster cluster;
 
     protected void collectDelegationCandidates() {

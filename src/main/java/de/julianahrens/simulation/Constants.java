@@ -26,7 +26,7 @@ public class Constants {
     public static final long RANDOM_SEED = 42;
 
     // DuckDB file name
-    public static final String DUCKDB_NAME = "first-run-17-08.db";
+    public static final String DUCKDB_NAME = "run-1-22-08.db";
 
     // Result logger
     public static final ResultLogger LOGGER = new DuckDbResultLogger();

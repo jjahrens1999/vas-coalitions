@@ -38,7 +38,7 @@ public class DataCenter extends ComputeClusterElement {
             BasicStrategy.instance.doDelegate(this, delegationCandidates);
         } else {
             // job delegation completely handled by coalition
-            coalition.get().receiveOwnDelegationRequest(this);
+            coalition.get().receiveOwnDelegationRequest(new DataCenterCostTuple(this, actualCost));
         }
     }
 
